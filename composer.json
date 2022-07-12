@@ -1,0 +1,22 @@
+{
+    "name": "gam/google-addresses-metabox",
+    "type": "wordpress-plugin",
+    "keywords": [
+        "wordpress"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jeffrey Sevinga",
+            "email": "sevinga@protonmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "GAM\\": "src/inc/"
+        }
+    }
+}
