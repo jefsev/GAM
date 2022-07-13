@@ -1,11 +1,14 @@
 # GAM
-Save locations and location lat / lng
+Save location name and location lat / lng
+Saved locations are served on /wp-json/gam-addresses/v1/adresses/ 
 
-## WIP 
+![GAM Google Addresses Metadata](gam-screenshot.png)
 
 ### Todo
 - [x] Save google API key to database
-- [ ] Serialize key
-- [ ] Save lat / lng coordinates to database using plugin settings page
-- [ ] Serve lat / lng coordinates in WP Rest API ( to use in React )
+- [x] Save lat / lng coordinates to database using plugin settings page
+- [x] Show list of selected locations
+- [x] Add option to remove selected locations
+- [x] Search Google maps api on typing and copy paste
+- [x] Serve lat / lng coordinates in WP Rest API ( to use in React )
 - [ ] If i have time, create front end google maps that loads all picked locations

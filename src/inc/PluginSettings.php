@@ -14,6 +14,9 @@ class PluginSettings
         // Add the options page and menu item.
         add_action('admin_menu', array($this, 'add_plugin_admin_menu'));
         $this->add_plugin_option();
+
+        // Add options to REST
+        add_action( 'rest_api_init', array($this, 'add_option_to_rest'));
     }
 
     /**
@@ -42,6 +45,35 @@ class PluginSettings
     {
         add_option('g_key', 'api-key');
         add_option('gam_selected_addresses', array());
+    }
+
+     /**
+     * Add plugin options to WordPress REST api
+     * @link https://developer.wordpress.org/rest-api/extending-the-rest-api/adding-custom-endpoints/
+     */
+    public function add_option_to_rest()
+    {
+        register_rest_route( 
+            'gam-addresses/v1', 
+            'adresses', 
+            array(
+                'methods' => 'GET',
+                'callback' => array($this, 'setup_option_rest'),
+                'permission_callback' => '__return_true'
+            )
+        );
+    }
+
+    public function setup_option_rest($request)
+    {
+        $saved_addresses = get_option( 'gam_selected_addresses');
+        $saved_addresses_REST = [];
+
+        foreach ($saved_addresses as $key => $address) {
+            $saved_addresses_REST[$key] = $address;
+        }
+
+        return rest_ensure_response($saved_addresses_REST);
     }
 
 };
