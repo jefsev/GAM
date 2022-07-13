@@ -1,5 +1,5 @@
 # GAM
-Save location name and location lat / lng
+Save location name and location lat / lon
 Saved locations are served on /wp-json/gam-addresses/v1/adresses/ 
 
 ![GAM Google Addresses Metadata](gam-screenshot.png)
