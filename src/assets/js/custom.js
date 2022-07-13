@@ -28,91 +28,125 @@
     let geocoder;
     geocoder = new google.maps.Geocoder();
 
-    // Copy the input field
-    $("#GAM-search-address .addone a.add").click(function (e) {
-        e.preventDefault();
-        var row = $("#GAM-search-address .fields .address_meta_box_row")
-            .first()
-            .clone();
-
-        $("#GAM-search-address .fields").append(row);
-        var row = $("#GAM-search-address .fields .address_meta_box_row")
-            .last()
-            .find("input")
-            .val("");
-    });
-
     // Search for correct lat lon on input change
-    $('#address_search').on("keypress", (e) => {
+    const address_search_bar = document.querySelector('#address_search');
+
+    // Search while typing
+    address_search_bar.addEventListener('keypress', (e) => {
         searchAddresses(e.target.value);
+    })
+
+    // Search on copy paste
+    address_search_bar.addEventListener('paste', (e) => {
+        let paste = (e.clipboardData || window.clipboardData).getData('text');
+
+        searchAddresses(paste);
+    })
+
+    // Save location
+    document.body.addEventListener('click', (e) => {
+        if (e.target.className === 'desired-address') {
+            add_address_to_list(e);
+        };
     });
 
-    // Add click event to li
-    $(document).on(
-        "click",
-        "#GAM-search-address .fields .address_meta_box_row .humaninput .suggestions ul li",
-        function () {
-            $(
-                "#GAM-search-address .fields .address_meta_box_row .humaninput .suggestions"
-            ).hide();
+    function add_address_to_list(e) {
+        let lat = e.target.dataset.lat;
+        let lon = e.target.dataset.lon;
+        let address = e.target.textContent;
 
-            $(this)
-                .closest(".address_meta_box_row")
-                .find("input.address")
-                .val($(this).text());
-            $(this)
-                .closest(".address_meta_box_row")
-                .find("input.latlon")
-                .val($(this).attr("data-lat") + ";" + $(this).attr("data-lon"));
+        // setup array
+        let data = {
+            'lat': lat,
+            'lon': lon,
+            'address': address
         }
-    );
 
-    // Add click event to .close
-    $(document).on(
-        "click",
-        "#GAM-search-address .fields .address_meta_box_row .close",
-        function () {
-            if ($("#GAM-search-address .fields .address_meta_box_row").length > 1)
-                $(this)
-                    .closest(".address_meta_box_row")
-                    .remove();
+        console.log(data)
+
+        // setup unique identifier
+        let key = lat + lon;
+
+        const ajaxArgs = {
+            action: 'add_address',
+            obj: data,
+            key: key
         }
-    );
+
+        $.ajax({
+            url: '/wp-admin/admin-ajax.php',
+            data: ajaxArgs,
+            dataType: 'json',
+            type: 'post',
+            success: function () {
+                e.target.remove();
+                location.reload(true);
+            },
+            error: function (e) {
+                console.log('This is not good: ' + e);
+            },
+        });
+    }
+
+    // Remove location
+    const remove_location = document.querySelectorAll('.remove_address');
+
+    remove_location.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Get unique key
+            let key = e.target.dataset.key;
+
+            // Ajax the key
+            const ajaxArgsRemove = {
+                action: 'remove_address',
+                key: key
+            }
+
+            $.ajax({
+                url: '/wp-admin/admin-ajax.php',
+                data: ajaxArgsRemove,
+                dataType: 'json',
+                type: 'post',
+                success: function () {
+                    location.reload(true);
+                },
+                error: function (e) {
+                    console.log('This is not good: ' + e);
+                },
+            });
+        })
+    });
+
 
     // Search for addresses
     function searchAddresses(inputval) {
-        var sug = $(".suggestions");
-        var input = inputval;
+        const sug = $('#suggestions');
+        const current_sug = $('#suggestions ul li');
+        let input = inputval;
         // check if e have enough input
         if (input.length > 4) {
-            $(this)
-                .closest(".address_meta_box_row")
-                .addClass("loading");
+            $('#address_search').addClass('loading');
 
             geocoder.geocode({ address: input }, function (results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     // Remove previous results
-                    sug.find("ul li").remove();
+                    if (current_sug > 0) {
+                        sug.find('ul li').remove();
+                    }
 
                     // Add results
                     $.each(results, function (i) {
-                        console.log(
-                            this.geometry.location.lat(),
-                            this.geometry.location.lng()
+                        sug.find("ul").append(
+                            "<li class='desired-address' data-index='" +
+                            i +
+                            "' data-lat='" +
+                            this.geometry.location.lat() +
+                            "' data-lon='" +
+                            this.geometry.location.lng() +
+                            "'>" +
+                            this.formatted_address +
+                            "</li>"
                         );
-                        sug
-                            .find("ul")
-                            .append(
-                                "<li data-index='" +
-                                i +
-                                "' data-lat='" +
-                                this.geometry.location.lat() +
-                                "' data-lon='" +
-                                this.geometry.location.lng() +
-                                "'>" +
-                                this.formatted_address +
-                                "</li>"
-                            );
                     });
 
                     // Show suggestions
@@ -121,9 +155,10 @@
                     sug.hide();
                 }
 
-                $(this)
-                    .closest(".address_meta_box_row")
-                    .removeClass("loading");
+                // Remove loading icon on inactivity
+                setTimeout(function () {
+                    $('#address_search').removeClass("loading");
+                }, 1200);
             });
         } else {
             sug.hide();

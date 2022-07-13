@@ -37,11 +37,13 @@ class AjaxAdmin
      */
     public function add_address()
     {
-        $form_data = $_POST['address'];
+        $form_data = $_POST['obj'];
+        $unique_key = $_POST['key'];
+        
         $selected_addresses = get_option('gam_selected_addresses');
 
-        if (!in_array($form_data, $selected_addresses)) {
-            array_push($selected_addresses, $form_data);
+        if (!in_array($unique_key, $selected_addresses)) {
+            $selected_addresses[$unique_key] = $form_data;
         }
 
         update_option('gam_selected_addresses', $selected_addresses);
@@ -54,12 +56,11 @@ class AjaxAdmin
      */
     public function remove_address()
     {
-        $form_data = $_POST['address'];
+        $unique_key = $_POST['key'];
         $selected_addresses = get_option('gam_selected_addresses');
 
-        if (in_array($form_data, $selected_addresses)) {
-            unset($selected_addresses[array_search($form_data, $selected_addresses)]);
-        }
+        //delete element in array by key
+        unset($selected_addresses[$unique_key]);
 
         update_option('gam_selected_addresses', $selected_addresses);
 
