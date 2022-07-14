@@ -43,7 +43,7 @@ class Enqueue
 
         if (!is_null($admin_page) && 'toplevel_page_gam-settings' === $admin_page->id) {
             wp_enqueue_script( 'gam-javascript', plugin_dir_url(GAM_Plugin) .'src/assets/js/custom.js', array( 'jquery', 'google-maps' ), null, true);
-            wp_enqueue_script('google-maps', '//maps.googleapis.com/maps/api/js?key='. $api_key .'' , array(), '3', true);
+            wp_enqueue_script('google-maps', '//maps.googleapis.com/maps/api/js?key='. $api_key .'&libraries=places' , array(), '', true);
         }
     }
 }

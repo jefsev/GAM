@@ -42,7 +42,7 @@ $saved_addresses = get_option( 'gam_selected_addresses ');
         <div class="saved-locations" id="saved_locations">
             <?php foreach ($saved_addresses as $address) { ?>
                 <div class="saved-location">
-                    <h4><?= $address["address"]; ?></h4>
+                    <h4><?php if (!empty($address["company"])) { echo '<b>'. $address["company"] .'</b> -'; }  ?> <?= $address["address"]; ?></h4>
                     <button class='button-secondary remove_address' data-key='<?= $address["lat"] . $address["lon"] ?>'>Remove location</button>
                 </div>
             <?php } ?>
