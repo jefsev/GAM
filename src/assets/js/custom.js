@@ -25,8 +25,7 @@
     });
 
     // Setup geocoder
-    let geocoder;
-    geocoder = new google.maps.Geocoder();
+    const geocoder = new google.maps.Geocoder();
 
     // Search for correct lat lon on input change
     const address_search_bar = document.querySelector('#address_search');
@@ -53,13 +52,15 @@
     function add_address_to_list(e) {
         let lat = e.target.dataset.lat;
         let lon = e.target.dataset.lon;
-        let address = e.target.textContent;
+        let address = e.target.dataset.address;
+        let company_name = e.target.querySelector('span').textContent;
 
         // setup array
         let data = {
             'lat': lat,
             'lon': lon,
-            'address': address
+            'address': address,
+            'company': company_name
         }
 
         console.log(data)
@@ -117,6 +118,7 @@
         })
     });
 
+    var service = new google.maps.places.PlacesService(document.createElement('div'));
 
     // Search for addresses
     function searchAddresses(inputval) {
@@ -136,6 +138,10 @@
 
                     // Add results
                     $.each(results, function (i) {
+                        let lat = this.geometry.location.lat();
+                        let lng = this.geometry.location.lng()
+                        let pointCenter = new google.maps.LatLng(lat, lng);
+
                         sug.find("ul").append(
                             "<li class='desired-address' data-index='" +
                             i +
@@ -143,10 +149,26 @@
                             this.geometry.location.lat() +
                             "' data-lon='" +
                             this.geometry.location.lng() +
+                            "' data-address='" +
+                            this.formatted_address +
                             "'>" +
                             this.formatted_address +
-                            "</li>"
+                            " <span id='company_" + i + "'></span></li>"
                         );
+
+                        var request = {
+                            location: pointCenter,
+                            rankBy: google.maps.places.RankBy.DISTANCE,
+                            type: ['establishment'],
+                        };
+
+                        service.nearbySearch(request, function (PlaceResult, status) {
+                            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                                let company = PlaceResult[0].name;
+                                document.querySelector('#company_' + i).textContent = company;
+                            }
+                        });
+
                     });
 
                     // Show suggestions

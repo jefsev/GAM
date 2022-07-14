@@ -33,6 +33,11 @@
     margin-bottom: 18px;
 }
 
+.GAM-setting-page .saved-location b {
+    font-weight: 700;
+    font-style: italic;
+}
+
 .GAM-settings-content #suggestions ul {
     background: #fff;
     border-radius: 4px;
