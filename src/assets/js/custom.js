@@ -32,7 +32,16 @@
 
     // Search while typing
     address_search_bar.addEventListener('keypress', (e) => {
-        searchAddresses(e.target.value);
+        setTimeout(() => {
+            searchAddresses(e.target.value);
+        }, 850);
+    })
+
+    // Search while done typing
+    address_search_bar.addEventListener('keyup', (e) => {
+        setTimeout(() => {
+            searchAddresses(e.target.value);
+        }, 600);
     })
 
     // Search on copy paste
@@ -54,18 +63,16 @@
         let lng = e.target.dataset.lon;
         let address = e.target.dataset.address;
 
-        // convert lat & lng to float  
-        lat = parseFloat(lat);
-        lng = parseFloat(lng);
-
         // setup array
         let data = {
             'lat': lat,
             'lon': lng,
             'address': address,
+            'company_name': null,
+            'website': null,
+            'phone': null,
+            'email': null
         }
-
-        console.log(data)
 
         // setup unique identifier
         let key = lat + lng;
@@ -125,7 +132,7 @@
     // Search for addresses
     function searchAddresses(inputval) {
         const sug = $('#suggestions');
-        const current_sug = $('#suggestions ul li');
+        const current_sug = $('#suggestions ul li').length;
         let input = inputval;
         // check if e have enough input
         if (input.length > 4) {
@@ -134,16 +141,11 @@
             geocoder.geocode({ address: input }, function (results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     // Remove previous results
-                    if (current_sug > 0) {
+                    if (current_sug > 0 ) {
                         sug.find('ul li').remove();
                     }
-
                     // Add results
                     $.each(results, function (i) {
-                        // let lat = this.geometry.location.lat();
-                        // let lng = this.geometry.location.lng()
-                        // //let pointCenter = new google.maps.LatLng(lat, lng);
-
                         sug.find("ul").append(
                             "<li class='desired-address' data-index='" +
                             i +
@@ -157,27 +159,11 @@
                             this.formatted_address +
                             " </li>"
                         );
-
-                        // var request = {
-                        //     location: pointCenter,
-                        //     rankBy: google.maps.places.RankBy.DISTANCE,
-                        //     type: ['establishment'],
-                        // };
-
-                        // service.nearbySearch(request, function (PlaceResult, status) {
-                        //     if (status === google.maps.places.PlacesServiceStatus.OK) {
-                        //         let company = PlaceResult[0].name;
-                        //         document.querySelector('#company_' + i).textContent = company;
-                        //     }
-                        // });
-
                     });
 
                     // Show suggestions
                     sug.show();
-                } else {
-                    sug.hide();
-                }
+                } 
 
                 // Remove loading icon on inactivity
                 setTimeout(function () {
