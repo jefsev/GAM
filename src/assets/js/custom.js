@@ -53,7 +53,6 @@
         let lat = e.target.dataset.lat;
         let lng = e.target.dataset.lon;
         let address = e.target.dataset.address;
-        let company_name = e.target.querySelector('span').textContent;
 
         // convert lat & lng to float  
         lat = parseFloat(lat);
@@ -64,7 +63,6 @@
             'lat': lat,
             'lon': lng,
             'address': address,
-            'company': company_name
         }
 
         console.log(data)
@@ -142,9 +140,9 @@
 
                     // Add results
                     $.each(results, function (i) {
-                        let lat = this.geometry.location.lat();
-                        let lng = this.geometry.location.lng()
-                        let pointCenter = new google.maps.LatLng(lat, lng);
+                        // let lat = this.geometry.location.lat();
+                        // let lng = this.geometry.location.lng()
+                        // //let pointCenter = new google.maps.LatLng(lat, lng);
 
                         sug.find("ul").append(
                             "<li class='desired-address' data-index='" +
@@ -157,21 +155,21 @@
                             this.formatted_address +
                             "'>" +
                             this.formatted_address +
-                            " <span id='company_" + i + "'></span></li>"
+                            " </li>"
                         );
 
-                        var request = {
-                            location: pointCenter,
-                            rankBy: google.maps.places.RankBy.DISTANCE,
-                            type: ['establishment'],
-                        };
+                        // var request = {
+                        //     location: pointCenter,
+                        //     rankBy: google.maps.places.RankBy.DISTANCE,
+                        //     type: ['establishment'],
+                        // };
 
-                        service.nearbySearch(request, function (PlaceResult, status) {
-                            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                                let company = PlaceResult[0].name;
-                                document.querySelector('#company_' + i).textContent = company;
-                            }
-                        });
+                        // service.nearbySearch(request, function (PlaceResult, status) {
+                        //     if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        //         let company = PlaceResult[0].name;
+                        //         document.querySelector('#company_' + i).textContent = company;
+                        //     }
+                        // });
 
                     });
 

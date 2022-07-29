@@ -18,12 +18,14 @@ $saved_addresses = get_option( 'gam_selected_addresses ');
                 <p>Create a google API key at: <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">Google documentation</a></p>
             </div>
             <form method="post" id="gam-api-key-form">
-                <?php if (!empty($api_key)) { ?>
-                    <input type="text" name="api_key" id="api_key" value="" placeholder="*******************" style="padding-top: 7px;"><span class="dashicons dashicons-saved"></span>
+                <?php if ($api_key) { ?>
+                    <input type="text" name="api_key" id="api_key" value="" disabled placeholder="*******************" style="padding-top: 7px;"><span class="dashicons dashicons-saved"></span>
+                    <button class="button-primary btn--ajax" id="add_api_key">Remove key</button>
                 <?php } else { ?>
                     <input type="text" name="api_key" id="api_key" value="">
+                    <button class="button-primary btn--ajax" id="add_api_key">Add key</button>
                 <?php } ?>
-                <button class="button-primary btn--ajax" id="add_api_key">Add key</button>
+                
             </form>
 
         <div class="search-container">
