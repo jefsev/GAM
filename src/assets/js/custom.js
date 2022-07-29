@@ -51,14 +51,18 @@
 
     function add_address_to_list(e) {
         let lat = e.target.dataset.lat;
-        let lon = e.target.dataset.lon;
+        let lng = e.target.dataset.lon;
         let address = e.target.dataset.address;
         let company_name = e.target.querySelector('span').textContent;
+
+        // convert lat & lng to float  
+        lat = parseFloat(lat);
+        lng = parseFloat(lng);
 
         // setup array
         let data = {
             'lat': lat,
-            'lon': lon,
+            'lon': lng,
             'address': address,
             'company': company_name
         }
@@ -66,7 +70,7 @@
         console.log(data)
 
         // setup unique identifier
-        let key = lat + lon;
+        let key = lat + lng;
 
         const ajaxArgs = {
             action: 'add_address',
