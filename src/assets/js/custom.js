@@ -44,24 +44,80 @@
         }, 600);
     })
 
-    // Search on copy paste
+    // Search on copy paste.
     address_search_bar.addEventListener('paste', (e) => {
         let paste = (e.clipboardData || window.clipboardData).getData('text');
 
         searchAddresses(paste);
     })
 
-    // Save location
+    // Save location.
     document.body.addEventListener('click', (e) => {
         if (e.target.className === 'desired-address') {
             add_address_to_list(e);
         };
     });
 
+    // Update location.
+    const update_buttons = document.querySelectorAll('.update_address');
+
+    update_buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            update_address_in_list(e);
+        })
+    });
+
+    function update_address_in_list(e) {
+        // get unique identifier
+        let index = e.target.dataset.index;
+        let key = e.target.dataset.key;
+        let loc_element = document.getElementById(index);
+        let company_name = loc_element.querySelector('#company_name').value;
+        let website = loc_element.querySelector('#company_website').value;
+        let phone = loc_element.querySelector('#phone_nr').value;
+        let email = loc_element.querySelector('#email_email').value;
+
+        // prefix website.
+        website = 'https://' + website;
+
+        // setup array
+        let data = {
+            'company_name': company_name,
+            'website': website,
+            'phone': phone,
+            'email': email
+        }
+
+        const ajaxArgs = {
+            action: 'update_address',
+            obj: data,
+            key: key
+        }
+
+        $.ajax({
+            url: '/wp-admin/admin-ajax.php',
+            data: ajaxArgs,
+            dataType: 'json',
+            type: 'post',
+            success: function (e) {
+                console.log(e);
+                location.reload(true);
+            },
+            error: function (e) {
+                console.log('This is not good: ' + JSON.stringify(e));
+                
+            },
+        });
+    }
+
     function add_address_to_list(e) {
         let lat = e.target.dataset.lat;
         let lng = e.target.dataset.lon;
         let address = e.target.dataset.address;
+        // setup unique identifier
+        let key = lat + lng;
+
+        console.log(company_name);
 
         // setup array
         let data = {
@@ -73,9 +129,6 @@
             'phone': null,
             'email': null
         }
-
-        // setup unique identifier
-        let key = lat + lng;
 
         const ajaxArgs = {
             action: 'add_address',

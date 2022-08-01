@@ -66,6 +66,19 @@
     margin-bottom: 8px;
 }
 
+.GAM-setting-page .saved-location .extra-fields .row .prefix {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    width: 62px;
+    padding: 2px 10px;
+    background-color: #f0f0f1;
+    border-radius: 4px 0 0 4px;
+    border: 1px solid #8c8f94;
+    margin-left: 12px;
+    border-right: 0;
+}
+
 .GAM-setting-page .saved-location .extra-fields .row label {
     display: block;
     white-space: nowrap;
@@ -74,6 +87,12 @@
 
 .GAM-setting-page .saved-location .extra-fields .row input {
     margin-left: 12px;
+}
+
+.GAM-setting-page .saved-location .extra-fields .row input#company_website {
+    margin-left: 0;
+    border-radius: 0 4px 4px 0;
+    border-left: 0;
 }
 
 .GAM-setting-page .saved-location b {

@@ -18,6 +18,7 @@ class AjaxAdmin
     public function initialize()
     {
         add_action('wp_ajax_add_address', array($this, 'add_address'));
+        add_action('wp_ajax_update_address', array($this, 'update_address'));
         add_action('wp_ajax_remove_address', array($this, 'remove_address'));
         add_action('wp_ajax_add_api_key', array($this, 'add_api_key'));
     }
@@ -49,6 +50,26 @@ class AjaxAdmin
         update_option('gam_selected_addresses', $selected_addresses);
 
         wp_send_json($selected_addresses);
+    }
+
+    /**
+     * The update method to run on AJAX
+     */
+    public function update_address()
+    {
+        $form_data = $_POST['obj'];
+        $unique_key = $_POST['key'];
+        
+        $selected_addresses = get_option('gam_selected_addresses');
+
+        $selected_addresses[$unique_key]['company_name'] = $form_data['company_name'];
+        $selected_addresses[$unique_key]['website'] = $form_data['website'];
+        $selected_addresses[$unique_key]['phone'] = $form_data['phone'];
+        $selected_addresses[$unique_key]['email'] = $form_data['email'];;
+
+        update_option('gam_selected_addresses', $selected_addresses);
+
+        wp_send_json($form_data);
     }
 
     /**
