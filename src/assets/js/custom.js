@@ -117,8 +117,6 @@
         // setup unique identifier
         let key = lat + lng;
 
-        console.log(company_name);
-
         // setup array
         let data = {
             'lat': lat,
