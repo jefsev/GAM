@@ -5,6 +5,7 @@
 */
 $api_key = get_option( 'g_key' );
 $saved_addresses = get_option( 'gam_selected_addresses ');
+
 ?>
 
 <div class="GAM-setting-page">
@@ -18,12 +19,14 @@ $saved_addresses = get_option( 'gam_selected_addresses ');
                 <p>Create a google API key at: <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">Google documentation</a></p>
             </div>
             <form method="post" id="gam-api-key-form">
-                <?php if (!empty($api_key)) { ?>
-                    <input type="text" name="api_key" id="api_key" value="" placeholder="*******************" style="padding-top: 7px;"><span class="dashicons dashicons-saved"></span>
+                <?php if ($api_key) { ?>
+                    <input type="text" name="api_key" id="api_key" value="" disabled placeholder="*******************" style="padding-top: 7px;"><span class="dashicons dashicons-saved"></span>
+                    <button class="button-primary btn--ajax" id="add_api_key">Remove key</button>
                 <?php } else { ?>
                     <input type="text" name="api_key" id="api_key" value="">
+                    <button class="button-primary btn--ajax" id="add_api_key">Add key</button>
                 <?php } ?>
-                <button class="button-primary btn--ajax" id="add_api_key">Add key</button>
+                
             </form>
 
         <div class="search-container">
@@ -40,12 +43,42 @@ $saved_addresses = get_option( 'gam_selected_addresses ');
         </div>
 
         <div class="saved-locations" id="saved_locations">
-            <?php foreach ($saved_addresses as $address) { ?>
-                <div class="saved-location">
-                    <h4><?php if (!empty($address["company"])) { echo '<b>'. $address["company"] .'</b> -'; }  ?> <?= $address["address"]; ?></h4>
-                    <button class='button-secondary remove_address' data-key='<?= $address["lat"] . $address["lon"] ?>'>Remove location</button>
+            <h3 class="gam-row-title">Update address information:</h3>
+            <p>Add information for the google map marker infowindow.</p>
+            <?php 
+            $i = 0;
+            foreach ($saved_addresses as $address) { ?>
+                <div class="saved-location" id="<?= $i; ?>">
+                    <div class="head">
+                        <h4><?= $address["address"]; ?></h4>
+                        <div class="btn-row">
+                            <button class='button-secondary remove_address' data-key='<?= $address["lat"] . $address["lon"] ?>'>Remove location</button>
+                            <button class='button-primary update_address' data-key='<?= $address["lat"] . $address["lon"] ?>' data-index='<?= $i; ?>'>Update location</button>
+                        </div>
+                    </div>
+                    <div class="extra-fields">
+                        <div class="row">
+                            <label for="company_name">Company name: </label>
+                            <input type="text" name="company_name" id="company_name" style="width: 100%" <?php if (!empty($address["company_name"])) { echo 'value="' . $address["company_name"] . '"'; } ?>/>
+                        </div>
+                        <div class="row">
+                            <label for="company_website">Website: </label>
+                            <span class="prefix"> https:// </span>
+                            <input type="text" name="company_website" id="company_website" style="width: calc(100% - 62px);" <?php if (!empty($address["website"])) { echo 'value="' . str_replace('https://', '', $address["website"]) . '"'; } ?>/>
+                        </div>
+                        <div class="row">
+                            <label for="phone_nr">Phone: </label>
+                            <input type="text" name="phone_nr" id="phone_nr" style="width: 100%" <?php if (!empty($address["phone"])) { echo 'value="' . $address["phone"] . '"'; } ?>/>
+                        </div>
+                        <div class="row">
+                            <label for="email_email">Email: </label>
+                            <input type="text" name="email_email" id="email_email" style="width: 100%" <?php if (!empty($address["email"])) { echo 'value="' . $address["email"] . '"'; } ?>/>
+                        </div>
+                    </div>
                 </div>
-            <?php } ?>
+            <?php 
+            $i++;
+            } ?>
         </div>
     </div>
 </div>

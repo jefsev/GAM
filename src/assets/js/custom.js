@@ -32,45 +32,103 @@
 
     // Search while typing
     address_search_bar.addEventListener('keypress', (e) => {
-        searchAddresses(e.target.value);
+        setTimeout(() => {
+            searchAddresses(e.target.value);
+        }, 850);
     })
 
-    // Search on copy paste
+    // Search while done typing
+    address_search_bar.addEventListener('keyup', (e) => {
+        setTimeout(() => {
+            searchAddresses(e.target.value);
+        }, 600);
+    })
+
+    // Search on copy paste.
     address_search_bar.addEventListener('paste', (e) => {
         let paste = (e.clipboardData || window.clipboardData).getData('text');
 
         searchAddresses(paste);
     })
 
-    // Save location
+    // Save location.
     document.body.addEventListener('click', (e) => {
         if (e.target.className === 'desired-address') {
             add_address_to_list(e);
         };
     });
 
+    // Update location.
+    const update_buttons = document.querySelectorAll('.update_address');
+
+    update_buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            update_address_in_list(e);
+        })
+    });
+
+    function update_address_in_list(e) {
+        // get unique identifier
+        let index = e.target.dataset.index;
+        let key = e.target.dataset.key;
+        let loc_element = document.getElementById(index);
+        let company_name = loc_element.querySelector('#company_name').value;
+        let website = loc_element.querySelector('#company_website').value;
+        let phone = loc_element.querySelector('#phone_nr').value;
+        let email = loc_element.querySelector('#email_email').value;
+
+        // prefix website.
+        website = 'https://' + website;
+
+        // setup array
+        let data = {
+            'company_name': company_name,
+            'website': website,
+            'phone': phone,
+            'email': email
+        }
+
+        const ajaxArgs = {
+            action: 'update_address',
+            obj: data,
+            key: key
+        }
+
+        $.ajax({
+            url: '/wp-admin/admin-ajax.php',
+            data: ajaxArgs,
+            dataType: 'json',
+            type: 'post',
+            success: function (e) {
+                console.log(e);
+                location.reload(true);
+            },
+            error: function (e) {
+                console.log('This is not good: ' + JSON.stringify(e));
+                
+            },
+        });
+    }
+
     function add_address_to_list(e) {
         let lat = e.target.dataset.lat;
         let lng = e.target.dataset.lon;
         let address = e.target.dataset.address;
-        let company_name = e.target.querySelector('span').textContent;
+        // setup unique identifier
+        let key = lat + lng;
 
-        // convert lat & lng to float  
-        lat = parseFloat(lat);
-        lng = parseFloat(lng);
+        console.log(company_name);
 
         // setup array
         let data = {
             'lat': lat,
             'lon': lng,
             'address': address,
-            'company': company_name
+            'company_name': null,
+            'website': null,
+            'phone': null,
+            'email': null
         }
-
-        console.log(data)
-
-        // setup unique identifier
-        let key = lat + lng;
 
         const ajaxArgs = {
             action: 'add_address',
@@ -127,7 +185,7 @@
     // Search for addresses
     function searchAddresses(inputval) {
         const sug = $('#suggestions');
-        const current_sug = $('#suggestions ul li');
+        const current_sug = $('#suggestions ul li').length;
         let input = inputval;
         // check if e have enough input
         if (input.length > 4) {
@@ -136,16 +194,11 @@
             geocoder.geocode({ address: input }, function (results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     // Remove previous results
-                    if (current_sug > 0) {
+                    if (current_sug > 0 ) {
                         sug.find('ul li').remove();
                     }
-
                     // Add results
                     $.each(results, function (i) {
-                        let lat = this.geometry.location.lat();
-                        let lng = this.geometry.location.lng()
-                        let pointCenter = new google.maps.LatLng(lat, lng);
-
                         sug.find("ul").append(
                             "<li class='desired-address' data-index='" +
                             i +
@@ -157,29 +210,13 @@
                             this.formatted_address +
                             "'>" +
                             this.formatted_address +
-                            " <span id='company_" + i + "'></span></li>"
+                            " </li>"
                         );
-
-                        var request = {
-                            location: pointCenter,
-                            rankBy: google.maps.places.RankBy.DISTANCE,
-                            type: ['establishment'],
-                        };
-
-                        service.nearbySearch(request, function (PlaceResult, status) {
-                            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                                let company = PlaceResult[0].name;
-                                document.querySelector('#company_' + i).textContent = company;
-                            }
-                        });
-
                     });
 
                     // Show suggestions
                     sug.show();
-                } else {
-                    sug.hide();
-                }
+                } 
 
                 // Remove loading icon on inactivity
                 setTimeout(function () {
