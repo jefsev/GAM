@@ -12,5 +12,5 @@ Saved locations are served on /wp-json/gam-addresses/v1/adresses/
 - [x] Search Google maps api on typing and copy paste
 - [x] Serve lat / lon coordinates in WP Rest API ( to use in React )
 - [x] If company name add using PlacesService
-- [ ] If company wesbite link add using PlacesService
+- [x] Add custom fields for googlemaps infowindow on location markers
 - [ ] If i have time, create front end google maps that loads all picked locations (now you need to use REST api or Options API)
